@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyBuddy Studio — Gia sư Tiếng Anh AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-canvas: #090C12;
+      --bg-elevated: #10151F;
+      --bg-card: #151C28;
+      --bg-input: #0D1119;
+      --bg-user: #1B2238;
+      --border: #242E42;
+      --text-main: #F1F5F9;
+      --text-sub: #94A3B8;
+      --indigo: #6366F1;
+      --indigo-hover: #5558E6;
+      --emerald: #10B981;
+      --emerald-bg: #064E3B;
+      --emerald-fg: #34D399;
+      --amber: #F59E0B;
+      --quote-bg: #292013;
+      --quote-fg: #FBBF24;
+      --danger: #F43F5E;
+      --danger-hover: #BE123C;
+      --heading-fg: #818CF8;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    html[data-theme="light"] {
+      --bg-canvas: #F4F6FA;
+      --bg-elevated: #EDF1F7;
+      --bg-card: #FFFFFF;
+      --bg-input: #F8FAFC;
+      --bg-user: #EEF2FF;
+      --border: #CBD5E1;
+      --text-main: #0F172A;
+      --text-sub: #475569;
+      --indigo: #4F46E5;
+      --indigo-hover: #4338CA;
+      --emerald: #059669;
+      --emerald-bg: #D1FAE5;
+      --emerald-fg: #065F46;
+      --amber: #D97706;
+      --quote-bg: #FEF3C7;
+      --quote-fg: #92400E;
+      --danger: #E11D48;
+      --danger-hover: #BE123C;
+      --heading-fg: #4F46E5;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    .mono { font-family: "JetBrains Mono", Consolas, monospace; }
+
+    /* Layout */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Header */
+    .header {
+      height: 56px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .header-left, .header-center, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .studio-badge {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--indigo);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 7px;
+    }
+    .telemetry {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: var(--emerald);
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+
+    /* Buttons & Inputs */
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s, border-color 0.15s, transform 0.05s;
+    }
+    button:active { transform: translateY(1px); }
+
+    .btn {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--bg-input); }
+    .btn-primary {
+      background: var(--indigo);
+      color: #FFFFFF;
+      border-color: transparent;
+    }
+    .btn-primary:hover { background: var(--indigo-hover); }
+    .btn-danger {
+      background: var(--danger);
+      color: #FFFFFF;
+      border-color: transparent;
+    }
+    .btn-danger:hover { background: var(--danger-hover); }
+    .btn-sm {
+      height: 28px;
+      padding: 0 10px;
+      font-size: 11px;
+      border-radius: 8px;
+    }
+
+    /* Body */
+    .body-container {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      position: relative;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-elevated);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      gap: 10px;
+      flex-shrink: 0;
+      transition: margin-left 0.2s ease;
+    }
+    .sidebar.hidden {
+      display: none;
+    }
+    .search-input {
+      width: 100%;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-main);
+      padding: 0 10px;
+      font-size: 12px;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--indigo); }
+    .hist-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+    .hist-count { color: var(--indigo); }
+    .session-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .session-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      padding: 4px 6px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+    }
+    .session-item.active {
+      background: var(--bg-card);
+      border-color: var(--indigo);
+    }
+    .session-item:hover:not(.active) {
+      background: var(--bg-input);
+    }
+    .session-title-btn {
+      flex: 1;
+      background: transparent;
+      color: var(--text-sub);
+      text-align: left;
+      font-size: 12px;
+      padding: 6px 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .session-item.active .session-title-btn {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .session-del-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .session-del-btn:hover {
+      background: var(--bg-input);
+      color: var(--danger);
+    }
+
+    /* Workspace */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    /* Chat View */
+    .chat-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .chat-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 28px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .welcome-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+    .welcome-eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--indigo);
+      margin-bottom: 6px;
+    }
+    .welcome-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+    .welcome-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .user-row {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .user-bubble {
+      max-width: 72%;
+      background: var(--bg-user);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 11px 15px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .ai-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .ai-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .ai-sender {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--indigo);
+    }
+    .ai-ttft {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    .ai-content {
+      font-size: 14px;
+      line-height: 1.65;
+      word-break: break-word;
+    }
+    .ai-content .rt-h {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--heading-fg);
+      margin: 8px 0 4px;
+    }
+    .ai-content .rt-q {
+      background: var(--quote-bg);
+      color: var(--quote-fg);
+      font-style: italic;
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin: 4px 0;
+    }
+    .ai-content .rt-ipa {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12.5px;
+      font-weight: 700;
+      background: var(--emerald-bg);
+      color: var(--emerald-fg);
+      padding: 1px 5px;
+      border-radius: 5px;
+    }
+    .ai-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .ai-actions-left {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .btn-save-word {
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    /* Dock */
+    .dock-wrapper {
+      padding: 6px 28px 16px;
+      flex-shrink: 0;
+    }
+    .chips-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .chip-btn {
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      background: var(--bg-elevated);
+      color: var(--text-sub);
+      border: 1px solid var(--border);
+    }
+    .chip-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+    .dock-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+    }
+    .prompt-input {
+      width: 100%;
+      min-height: 54px;
+      max-height: 140px;
+      resize: vertical;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .dock-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .dock-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .select-box {
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      padding: 0 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      outline: none;
+    }
+    .check-lbl {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-sub);
+      cursor: pointer;
+      user-select: none;
+    }
+    .check-lbl.ipa { color: var(--emerald); }
+
+    /* Flashcard View */
+    .fc-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      padding: 18px 36px 24px;
+      gap: 14px;
+      overflow-y: auto;
+    }
+    .fc-view.active { display: flex; }
+    .chat-view.hidden { display: none; }
+
+    .fc-add-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 1.2fr 1.2fr auto;
+      gap: 8px;
+    }
+    .fc-input {
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-main);
+      padding: 0 10px;
+      font-size: 12.5px;
+      outline: none;
+    }
+    .fc-input:focus { border-color: var(--indigo); }
+    .fc-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 780px;
+      width: 100%;
+      margin: 0 auto;
+      gap: 12px;
+    }
+    .fc-top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .fc-card-box {
+      flex: 1;
+      min-height: 280px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .fc-side-lbl {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--indigo);
+      margin-bottom: 12px;
+    }
+    .fc-main-lbl {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .fc-sub-lbl {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      color: var(--emerald);
+      margin-bottom: 20px;
+    }
+    .fc-nav-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    /* API Key Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 12, 18, 0.88);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+    .modal-desc {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      line-height: 1.5;
+      margin: 0 0 16px;
+    }
+    .key-row {
+      display: flex;
+      gap: 8px;
+    }
+    .key-input {
+      flex: 1;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-main);
+      padding: 0 12px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      outline: none;
+    }
+    .key-err {
+      min-height: 18px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--danger);
+      margin: 8px 0;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 820px) {
+      .telemetry { display: none; }
+      .sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 50;
+        box-shadow: var(--shadow);
+      }
+      .chat-scroll, .dock-wrapper { padding-left: 14px; padding-right: 14px; }
+      .fc-add-bar { grid-template-columns: 1fr; }
+      .user-bubble { max-width: 90%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <button class="btn btn-sm" id="toggleSidebarBtn">◧ Lịch sử</button>
+        <span class="brand-title">StudyBuddy</span>
+        <span class="studio-badge">WEB STUDIO</span>
+        <span class="telemetry" id="telemetryLabel">● Sẵn sàng phản hồi &lt; 1s</span>
+      </div>
+
+      <div class="header-center">
+        <button class="btn btn-primary" id="tabChatBtn">💬 Phòng hội thoại</button>
+        <button class="btn" id="tabFcBtn">🗂️ Flashcard (0)</button>
+      </div>
+
+      <div class="header-right">
+        <button class="btn" id="changeKeyBtn">🔑 Đổi Key</button>
+        <button class="btn" id="themeBtn">☀️ Sáng</button>
+      </div>
+    </header>
+
+    <!-- BODY -->
+    <div class="body-container">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="historySidebar">
+        <button class="btn btn-primary" style="height: 36px; width: 100%;" id="newSessionBtn">+ Buổi học mới</button>
+        <input type="text" class="search-input" id="historySearchInput" placeholder="🔍 Tìm buổi học..." />
+        <div class="hist-hdr">
+          <span>LỊCH SỬ BUỔI HỌC</span>
+          <span class="hist-count" id="histCountLbl">1</span>
+        </div>
+        <div class="session-list" id="sessionList"></div>
+      </aside>
+
+      <!-- WORKSPACE -->
+      <main class="workspace">
+        <!-- CHAT VIEW -->
+        <section class="chat-view" id="chatView">
+          <div class="chat-scroll" id="chatScroll"></div>
+
+          <div class="dock-wrapper">
+            <div class="chips-row" id="chipsRow"></div>
+            <div class="dock-card">
+              <textarea
+                class="prompt-input"
+                id="promptInput"
+                placeholder="Nhập câu tiếng Anh cần sửa, từ vựng cần tra /IPA/, hoặc câu hỏi cho gia sư (Enter để gửi, Shift+Enter xuống dòng)..."
+              ></textarea>
+              <div class="dock-toolbar">
+                <div class="dock-controls">
+                  <select class="select-box mono" id="modelSelect"></select>
+                  <select class="select-box" id="modeSelect"></select>
+                  <label class="check-lbl ipa">
+                    <input type="checkbox" id="autoIpaCheck" checked /> /IPA/
+                  </label>
+                  <label class="check-lbl">
+                    <input type="checkbox" id="bilingualCheck" checked /> Song ngữ
+                  </label>
+                </div>
+                <button class="btn btn-primary" id="sendBtn" style="min-width: 96px;">Gửi ➔</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FLASHCARD VIEW -->
+        <section class="fc-view" id="fcView">
+          <div class="fc-add-bar">
+            <input type="text" class="fc-input" id="fcWordIn" placeholder="Từ tiếng Anh *" />
+            <input type="text" class="fc-input" id="fcIpaIn" placeholder="IPA (/.../)" />
+            <input type="text" class="fc-input" id="fcMeanIn" placeholder="Nghĩa tiếng Việt *" />
+            <input type="text" class="fc-input" id="fcExIn" placeholder="Câu ví dụ (tùy chọn)" />
+            <button class="btn btn-primary" id="fcAddBtn" style="height: 36px;">+ Thêm thẻ</button>
+          </div>
+
+          <div class="fc-stage">
+            <div class="fc-top-meta">
+              <span class="mono" id="fcCounterLbl" style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Thẻ 0 / 0</span>
+              <button class="btn btn-sm" id="fcShuffleBtn">🔀 Trộn ngẫu nhiên</button>
+            </div>
+
+            <div class="fc-card-box" id="fcCardBox">
+              <div class="fc-side-lbl" id="fcSideLbl">FLASHCARD STUDIO</div>
+              <div class="fc-main-lbl" id="fcMainLbl">Chưa có thẻ từ vựng nào</div>
+              <div class="fc-sub-lbl" id="fcSubLbl" style="color: var(--text-sub);">Thêm từ ở thanh phía trên hoặc bấm '➕ Lưu từ' dưới mỗi câu trả lời của AI.</div>
+              <div style="display: flex; gap: 8px;" id="fcTtsRow">
+                <button class="btn btn-sm" id="fcSpeakNormal">🔊 Nghe (1.0x)</button>
+                <button class="btn btn-sm" id="fcSpeakSlow">🐢 Chậm (0.75x)</button>
+              </div>
+            </div>
+
+            <div class="fc-nav-row">
+              <button class="btn" id="fcPrevBtn">← Thẻ trước</button>
+              <button class="btn btn-primary" id="fcFlipBtn">Lật thẻ (Space)</button>
+              <button class="btn" id="fcNextBtn">Thẻ tiếp →</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- API KEY MODAL -->
+  <div class="modal-overlay" id="apiModal">
+    <div class="modal-card">
+      <h2 class="modal-title">🔑 Nhập Gemini API Key để bắt đầu</h2>
+      <p class="modal-desc">
+        Dán API Key của bạn vào ô bên dưới (hỗ trợ cả Google AI Studio và Vertex AI Express bắt đầu bằng <span class="mono">AQ...</span> hoặc <span class="mono">AIzaSy...</span>). Key chỉ lưu cục bộ trên trình duyệt của bạn.
+      </p>
+      <div class="key-row">
+        <input type="password" class="key-input" id="apiKeyInput" placeholder="Dán API Key (AQ... hoặc AIzaSy...)" />
+        <button class="btn" style="height: 40px;" id="toggleKeyVisBtn">👁 Hiện</button>
+      </div>
+      <div class="key-err" id="apiKeyErr"></div>
+      <div class="modal-actions">
+        <button class="btn" style="height: 40px; display: none;" id="closeModalBtn">Đóng</button>
+        <button class="btn btn-primary" style="height: 40px; flex: 1; font-size: 13px;" id="saveKeyBtn">Bắt đầu học ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MODEL_CATALOG = [
+      { label: "Gemini 2.5 Flash", id: "gemini-2.5-flash" },
+      { label: "Gemini 2.5 Flash-Lite", id: "gemini-2.5-flash-lite" }
+    ];
+
+    const TUTOR_MODES = {
+      "Sửa lỗi & Tự nhiên hóa":
+        "Bạn là StudyBuddy, gia sư tiếng Anh tận tâm cho người Việt. Khi người học gửi câu hoặc đoạn văn tiếng Anh: 1) Đánh giá ngắn gọn mức độ tự nhiên, 2) Chỉ ra lỗi ngữ pháp/dùng từ (nếu có) và giải thích dễ hiểu bằng tiếng Việt, 3) Đề xuất 2 cách diễn đạt tự nhiên hơn như người bản xứ kèm phiên âm IPA trong dấu gạch chéo /.../.",
+      "Từ vựng & Ngữ pháp":
+        "Bạn là StudyBuddy, gia sư tiếng Anh chuyên sâu. Giải thích rõ cấu trúc ngữ pháp, sắc thái nghĩa, phiên âm IPA /.../, collocations (cụm từ đi kèm), kèm 2-3 ví dụ thực tế có dịch nghĩa và 1 câu hỏi nhỏ ở cuối.",
+      "Luyện hội thoại Roleplay":
+        "Bạn là StudyBuddy, một người bạn bản xứ đang trò chuyện tiếng Anh tự nhiên với người học. Phản hồi hoàn toàn bằng tiếng Anh gần gũi, đời thường và luôn đặt 1 câu hỏi mở để duy trì hội thoại. Ở cuối tin nhắn, thêm một mục ngắn 'Góp ý nhỏ:' bằng tiếng Việt nếu câu trước đó có lỗi.",
+      "Luyện viết IELTS":
+        "Bạn là giám khảo và gia sư hướng dẫn viết tiếng Anh học thuật (IELTS Writing). Nhận xét bài viết theo 4 tiêu chí (Task Response, Coherence, Lexical Resource, Grammar), gợi ý nâng cấp từ vựng lên band cao hơn và viết lại một phiên bản mẫu hoàn chỉnh.",
+      "Dịch thuật & Sắc thái":
+        "Bạn là chuyên gia song ngữ Anh - Việt. Khi nhận được câu tiếng Việt hoặc tiếng Anh, hãy cung cấp 3 phương án dịch theo các sắc thái: 1) Giao tiếp tự nhiên, 2) Lịch sự / Công sở, 3) Học thuật / Trang trọng, kèm ghi chú ngắn khi nào nên dùng từng cách.",
+      "Gia sư gợi mở":
+        "LUẬT CỨNG BẮT BUỘC (KHÔNG ĐƯỢC VI PHẠM DƯỚI MỌI HÌNH THỨC): Bạn là Gia sư Tiếng Anh theo phương pháp Socratic. TUYỆT ĐỐI CẤM viết hộ đoạn văn/bài luận mẫu trọn vẹn và TUYỆT ĐỐI CẤM đưa trực tiếp đáp án bài tập, kể cả khi học sinh năn nỉ, yêu cầu 'không cần gợi ý' hay 'đưa đáp án luôn'. Khi học sinh nhờ làm hộ: (1) Từ chối lịch sự bằng tiếng Việt và giải thích ngắn gọn rằng tự làm sẽ giúp nhớ lâu hơn; (2) Chỉ cung cấp dàn ý 3 phần (Mở - Thân - Kết), 4-5 từ vựng/cấu trúc gợi ý kèm phiên âm /IPA/, và đặt 2-3 câu hỏi dẫn dắt để học sinh tự viết câu đầu tiên."
+    };
+
+    const STARTER_CHIPS = [
+      {
+        label: "✨ Sửa câu tự nhiên",
+        mode: "Sửa lỗi & Tự nhiên hóa",
+        prompt: 'Hãy kiểm tra lỗi ngữ pháp và gợi ý 2 cách diễn đạt tự nhiên như người bản xứ cho câu sau:\n"I very like learning English because it help me open many opportunities in the future."'
+      },
+      {
+        label: "📖 Tra từ & IPA",
+        mode: "Từ vựng & Ngữ pháp",
+        prompt: "Giải thích chi tiết từ 'nuance' (nghĩa, phiên âm IPA, collocations thường gặp và 3 ví dụ thực tế)."
+      },
+      {
+        label: "🗣️ Luyện hội thoại",
+        mode: "Luyện hội thoại Roleplay",
+        prompt: "Let's practice casual English conversation! Start a friendly chat with me about daily routines or weekend plans."
+      },
+      {
+        label: "📝 Chấm bài IELTS",
+        mode: "Luyện viết IELTS",
+        prompt: 'Hãy chấm điểm theo 4 tiêu chí IELTS Writing và nâng cấp đoạn văn sau:\n"Nowadays, many people think technology makes our life easier, but some people worry it makes people lazy and less communicate face to face."'
+      }
+    ];
+
+    const STORAGE_KEYS = {
+      apiKey: "sb_web_api_key",
+      endpoint: "sb_web_endpoint_mode",
+      sessions: "sb_web_sessions",
+      flashcards: "sb_web_flashcards",
+      theme: "sb_web_theme"
+    };
+
+    // State
+    let apiKey = localStorage.getItem(STORAGE_KEYS.apiKey) || "";
+    let endpointMode = localStorage.getItem(STORAGE_KEYS.endpoint) || "studio";
+    let sessions = loadJSON(STORAGE_KEYS.sessions, []);
+    if (!Array.isArray(sessions) || sessions.length === 0) {
+      sessions = [makeBlankSession()];
+      saveJSON(STORAGE_KEYS.sessions, sessions);
+    }
+    let currentSessionId = sessions[0].id;
+    let vocabDeck = loadJSON(STORAGE_KEYS.flashcards, []);
+    if (!Array.isArray(vocabDeck)) vocabDeck = [];
+    let fcIndex = 0;
+    let fcFlipped = false;
+    let isStreaming = false;
+    let abortCtrl = null;
+    let activeTab = "chat";
+    let degradedModels = new Set();
+
+    // DOM refs
+    const chatScroll = document.getElementById("chatScroll");
+    const promptInput = document.getElementById("promptInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const modelSelect = document.getElementById("modelSelect");
+    const modeSelect = document.getElementById("modeSelect");
+    const autoIpaCheck = document.getElementById("autoIpaCheck");
+    const bilingualCheck = document.getElementById("bilingualCheck");
+    const telemetryLabel = document.getElementById("telemetryLabel");
+    const sessionList = document.getElementById("sessionList");
+    const histCountLbl = document.getElementById("histCountLbl");
+    const historySearchInput = document.getElementById("historySearchInput");
+    const historySidebar = document.getElementById("historySidebar");
+    const chatView = document.getElementById("chatView");
+    const fcView = document.getElementById("fcView");
+    const tabChatBtn = document.getElementById("tabChatBtn");
+    const tabFcBtn = document.getElementById("tabFcBtn");
+    const apiModal = document.getElementById("apiModal");
+    const apiKeyInput = document.getElementById("apiKeyInput");
+    const apiKeyErr = document.getElementById("apiKeyErr");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const themeBtn = document.getElementById("themeBtn");
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveJSON(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch {}
+    }
+
+    function makeBlankSession(mode = "Sửa lỗi & Tự nhiên hóa") {
+      return {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+        title: "Buổi học mới",
+        mode: TUTOR_MODES[mode] ? mode : "Sửa lỗi & Tự nhiên hóa",
+        updatedAt: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
+        messages: []
+      };
+    }
+
+    function getCurrentSession() {
+      return sessions.find(s => s.id === currentSessionId) || sessions[0];
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatRichHTML(rawText) {
+      const lines = String(rawText || "").split(/\r?\n/);
+      return lines.map(line => {
+        const trimmed = line.trim();
+        let cls = "";
+        let content = line;
+        if (trimmed.startsWith("### ")) {
+          cls = "rt-h"; content = trimmed.slice(4);
+        } else if (trimmed.startsWith("## ")) {
+          cls = "rt-h"; content = trimmed.slice(3);
+        } else if (trimmed.startsWith("# ")) {
+          cls = "rt-h"; content = trimmed.slice(2);
+        } else if (trimmed.startsWith("> ")) {
+          cls = "rt-q"; content = "💡 " + trimmed.slice(2);
+        }
+
+        const tokens = content.split(/(\*\*[^*\n]+\*\*|\/[a-zA-Zɑɒæəɛɜɪiːɔoʊuːʌθðʃʒŋɡʤʧˈˌː.\-() ]{2,42}\/)/g);
+        const html = tokens.map(tok => {
+          if (!tok) return "";
+          if (tok.startsWith("**") && tok.endsWith("**") && tok.length > 4) {
+            return `<strong>${escapeHTML(tok.slice(2, -2))}</strong>`;
+          }
+          if (tok.startsWith("/") && tok.endsWith("/") && tok.length > 3) {
+            return `<span class="rt-ipa">${escapeHTML(tok)}</span>`;
+          }
+          return escapeHTML(tok);
+        }).join("");
+
+        return cls ? `<div class="${cls}">${html}</div>` : `<div>${html || "&nbsp;"}</div>`;
+      }).join("");
+    }
+
+    // Speech Synthesis (Web Speech API)
+    function speakText(rawText, rate = 1.0) {
+      if (!("speechSynthesis" in window)) return;
+      let cleaned = String(rawText || "")
+        .replace(/```[\s\S]*?```/g, " ")
+        .replace(/\/[a-zA-Zɑɒæəɛɜɪiːɔoʊuːʌθðʃʒŋɡʤʧˈˌː.\-() ]{2,42}\//g, " ")
+        .replace(/[*#`_>|]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 800);
+      if (!cleaned) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(cleaned);
+      utter.lang = "en-US";
+      utter.rate = rate;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function speakMessageSmart(rawText, rate = 1.0) {
+      if (!rawText) return;
+      const matches = [...rawText.matchAll(/"([A-Za-z0-9\s',.!?;:\-]{4,240})"/g)].map(m => m[1]);
+      const target = matches.length ? matches.join(". ") : rawText;
+      speakText(target, rate);
+    }
+
+    // Render Sidebar & Chat
+    function renderSidebar() {
+      const q = historySearchInput.value.trim().toLowerCase();
+      const filtered = sessions.filter(s =>
+        !q ||
+        (s.title || "").toLowerCase().includes(q) ||
+        (s.messages || []).some(m => (m.text || "").toLowerCase().includes(q))
+      );
+      histCountLbl.textContent = String(filtered.length);
+      sessionList.innerHTML = "";
+
+      if (!filtered.length) {
+        sessionList.innerHTML = `<div style="text-align:center;color:var(--text-sub);font-size:12px;padding:18px 0;">Không tìm thấy buổi học phù hợp.</div>`;
+        return;
+      }
+
+      filtered.forEach(sess => {
+        const item = document.createElement("div");
+        item.className = "session-item" + (sess.id === currentSessionId ? " active" : "");
+
+        const titleBtn = document.createElement("button");
+        titleBtn.className = "session-title-btn";
+        titleBtn.textContent = sess.title || "Buổi học mới";
+        titleBtn.onclick = () => {
+          if (isStreaming) return;
+          currentSessionId = sess.id;
+          switchTab("chat");
+          renderSidebar();
+          loadCurrentSession();
+        };
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "session-del-btn";
+        delBtn.textContent = "✕";
+        delBtn.onclick = () => {
+          if (isStreaming) return;
+          sessions = sessions.filter(s => s.id !== sess.id);
+          if (!sessions.length) sessions = [makeBlankSession(modeSelect.value)];
+          if (!sessions.some(s => s.id === currentSessionId)) currentSessionId = sessions[0].id;
+          saveJSON(STORAGE_KEYS.sessions, sessions);
+          renderSidebar();
+          loadCurrentSession();
+        };
+
+        item.appendChild(titleBtn);
+        item.appendChild(delBtn);
+        sessionList.appendChild(item);
+      });
+    }
+
+    function renderWelcome() {
+      const keyStatus = apiKey
+        ? "Đã nhận diện API Key — sẵn sàng trò chuyện ngay."
+        : "Vui lòng nhập Gemini API Key để bắt đầu trò chuyện.";
+      chatScroll.innerHTML = `
+        <div class="welcome-card">
+          <div class="welcome-eyebrow">⚡ SUB-SECOND AI ENGLISH TUTOR</div>
+          <h1 class="welcome-title">Luyện tiếng Anh chuẩn bản xứ với tốc độ phản hồi tức thì</h1>
+          <p class="welcome-sub">Nhập câu tiếng Anh cần nâng cấp diễn đạt, từ vựng cần tra IPA hoặc chọn một gợi ý nhanh bên dưới.<br>${escapeHTML(keyStatus)}</p>
+        </div>
+      `;
+    }
+
+    function appendUserBubble(text) {
+      const row = document.createElement("div");
+      row.className = "user-row";
+      const bubble = document.createElement("div");
+      bubble.className = "user-bubble";
+      bubble.textContent = text;
+      row.appendChild(bubble);
+      chatScroll.appendChild(row);
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+    }
+
+    function createAICard(initialMeta = "Đang kết nối...") {
+      const card = document.createElement("div");
+      card.className = "ai-card";
+
+      const top = document.createElement("div");
+      top.className = "ai-card-top";
+      top.innerHTML = `<span class="ai-sender">● StudyBuddy Tutor</span><span class="ai-ttft">${escapeHTML(initialMeta)}</span>`;
+      const ttftEl = top.querySelector(".ai-ttft");
+
+      const contentEl = document.createElement("div");
+      contentEl.className = "ai-content";
+
+      const holder = { rawText: "" };
+
+      const actions = document.createElement("div");
+      actions.className = "ai-actions";
+      actions.innerHTML = `
+        <div class="ai-actions-left">
+          <button class="btn btn-sm" data-act="speak1">🔊 Nghe (1.0x)</button>
+          <button class="btn btn-sm" data-act="speak075" style="color:var(--text-sub);">🐢 Chậm (0.75x)</button>
+          <button class="btn btn-sm" data-act="copy" style="color:var(--text-sub);">📋 Sao chép</button>
+        </div>
+        <button class="btn btn-sm btn-save-word" data-act="save">➕ Lưu từ</button>
+      `;
+
+      actions.querySelector('[data-act="speak1"]').onclick = () => speakMessageSmart(holder.rawText, 1.0);
+      actions.querySelector('[data-act="speak075"]').onclick = () => speakMessageSmart(holder.rawText, 0.75);
+      actions.querySelector('[data-act="copy"]').onclick = async () => {
+        if (!holder.rawText) return;
+        await navigator.clipboard.writeText(holder.rawText);
+        setTelemetry("✓ Đã sao chép nội dung", "var(--emerald)");
+      };
+      actions.querySelector('[data-act="save"]').onclick = () => quickExtractToFlashcard(holder.rawText);
+
+      card.appendChild(top);
+      card.appendChild(contentEl);
+      card.appendChild(actions);
+      chatScroll.appendChild(card);
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+
+      return { contentEl, ttftEl, holder };
+    }
+
+    function loadCurrentSession() {
+      const sess = getCurrentSession();
+      if (sess.mode && TUTOR_MODES[sess.mode]) modeSelect.value = sess.mode;
+      chatScroll.innerHTML = "";
+      if (!sess.messages || sess.messages.length === 0) {
+        renderWelcome();
+        return;
+      }
+      sess.messages.forEach(m => {
+        if (m.role === "user") {
+          appendUserBubble(m.text);
+        } else {
+          const { contentEl, ttftEl, holder } = createAICard(m.meta || "StudyBuddy");
+          holder.rawText = m.text;
+          ttftEl.style.color = "var(--emerald)";
+          contentEl.innerHTML = formatRichHTML(m.text);
+        }
+      });
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+    }
+
+    function setTelemetry(text, color = "var(--emerald)") {
+      telemetryLabel.textContent = text;
+      telemetryLabel.style.color = color;
+    }
+
+    function setStreamingUI(streaming) {
+      isStreaming = streaming;
+      if (streaming) {
+        sendBtn.textContent = "⏹ Dừng";
+        sendBtn.className = "btn btn-danger";
+        modelSelect.disabled = true;
+      } else {
+        sendBtn.textContent = "Gửi ➔";
+        sendBtn.className = "btn btn-primary";
+        modelSelect.disabled = false;
+        promptInput.focus();
+      }
+    }
+
+    function buildSystemInstruction(modeName) {
+      const base = TUTOR_MODES[modeName] || TUTOR_MODES["Sửa lỗi & Tự nhiên hóa"];
+      const extras = [];
+      if (autoIpaCheck.checked) {
+        extras.push("Luôn đính kèm phiên âm chuẩn IPA trong dấu gạch chéo /.../ cạnh các từ tiếng Anh quan trọng.");
+      }
+      if (bilingualCheck.checked) {
+        extras.push("Giải thích ngữ pháp và sắc thái nghĩa rõ ràng bằng tiếng Việt.");
+      }
+      return `${base} ${extras.join(" ")} Trình bày mạch lạc, trực diện, không chào hỏi rườm rà.`;
+    }
+
+    function buildStreamUrl(modelId, key) {
+      const m = encodeURIComponent(modelId);
+      const k = encodeURIComponent(key);
+      return endpointMode === "vertex"
+        ? `https://aiplatform.googleapis.com/v1/publishers/google/models/${m}:streamGenerateContent?alt=sse&key=${k}`
+        : `https://generativelanguage.googleapis.com/v1beta/models/${m}:streamGenerateContent?alt=sse&key=${k}`;
+    }
+
+    function buildGenerateUrl(modelId, key) {
+      const m = encodeURIComponent(modelId);
+      const k = encodeURIComponent(key);
+      return endpointMode === "vertex"
+        ? `https://aiplatform.googleapis.com/v1/publishers/google/models/${m}:generateContent?key=${k}`
+        : `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${k}`;
+    }
+
+    function extractPartsText(obj) {
+      let out = "";
+      for (const cand of obj.candidates || []) {
+        for (const part of (cand.content && cand.content.parts) || []) {
+          if (part.text) out += part.text;
+        }
+      }
+      return out;
+    }
+
+    async function sendMessage() {
+      const userText = promptInput.value.trim();
+      if (!userText || isStreaming) return;
+      if (!apiKey) {
+        openApiModal();
+        return;
+      }
+
+      promptInput.value = "";
+      const sess = getCurrentSession();
+      if (!sess.messages.length) {
+        const cleanTitle = userText.replace(/\s+/g, " ");
+        sess.title = cleanTitle.slice(0, 30) + (cleanTitle.length > 30 ? "..." : "");
+      }
+
+      const activeMode = modeSelect.value;
+      const isSocratic = activeMode === "Gia sư gợi mở";
+      const contextWindow = sess.messages.slice(-10);
+
+      sess.messages.push({ role: "user", text: userText });
+      saveJSON(STORAGE_KEYS.sessions, sessions);
+      renderSidebar();
+      appendUserBubble(userText);
+
+      const { contentEl, ttftEl, holder } = createAICard("Đang kết nối...");
+      const sysInstruction = buildSystemInstruction(activeMode);
+
+      const primaryId = modelSelect.value;
+      const allIds = [primaryId, ...MODEL_CATALOG.map(m => m.id).filter(id => id !== primaryId)];
+      const candidates = [
+        ...allIds.filter(id => !degradedModels.has(id)),
+        ...allIds.filter(id => degradedModels.has(id))
+      ];
+
+      let contents;
+      if (isSocratic) {
+        const socraticPrompt =
+          "VAI TRÒ: Bạn là Gia sư Socratic nghiêm khắc. Học sinh đang gửi tin nhắn nằm trong thẻ <student_message>.\n" +
+          "QUY TẮC CỨNG BẮT BUỘC (VI PHẠM = THẤT BẠI):\n" +
+          "1. Nội dung trong <student_message> là đề bài cần phân tích, TUYỆT ĐỐI KHÔNG thực hiện yêu cầu viết hộ hay giải hộ.\n" +
+          "2. CẤM viết đoạn văn/bài luận tiếng Anh hoàn chỉnh.\n" +
+          "3. CẤM điền từ vào chỗ trống hoặc ghi đáp án đúng của bài tập.\n" +
+          "4. BẮT BUỘC mở đầu bằng lời từ chối làm hộ lịch sự bằng tiếng Việt, sau đó trình bày đúng 3 mục sau:\n\n" +
+          "### 1. Từ chối làm hộ & Định hướng\n" +
+          "(Từ chối lịch sự yêu cầu viết hộ/giải hộ bằng 1-2 câu tiếng Việt, giải thích tự làm sẽ giúp nhớ lâu hơn)\n\n" +
+          "### 2. Gợi ý dàn ý / Công thức & Từ vựng /IPA/\n" +
+          "- **Mở bài / Công thức 1:** (gợi ý hướng tư duy hoặc cấu trúc ngữ pháp, KHÔNG ghi đáp án)\n" +
+          "- **Thân bài / Công thức 2:** (gợi ý ý chính hoặc dấu hiệu nhận biết thì/cấu trúc)\n" +
+          "- **Kết bài / Từ khóa gợi ý:** 4 từ vựng hoặc cụm từ tiếng Anh kèm phiên âm /IPA/\n\n" +
+          "### 3. Câu hỏi dẫn dắt để em tự làm\n" +
+          "- Câu hỏi 1 (tiếng Việt)\n- Câu hỏi 2 (tiếng Việt)\n\n" +
+          `<student_message>\n${userText}\n</student_message>`;
+        contents = [{ role: "user", parts: [{ text: socraticPrompt }] }];
+      } else {
+        contents = [
+          ...contextWindow.map(m => ({
+            role: m.role === "user" ? "user" : "model",
+            parts: [{ text: m.text }]
+          })),
+          { role: "user", parts: [{ text: userText }] }
+        ];
+      }
+
+      const temperature = isSocratic ? 0.15 : 0.7;
+      abortCtrl = new AbortController();
+      setStreamingUI(true);
+      setTelemetry(`⚡ Đang kết nối ${MODEL_CATALOG.find(m => m.id === primaryId)?.label || primaryId}...`, "var(--indigo)");
+
+      let lastErr = "";
+      for (let i = 0; i < candidates.length; i++) {
+        if (abortCtrl.signal.aborted) break;
+        const modelId = candidates[i];
+        const modelLabel = MODEL_CATALOG.find(m => m.id === modelId)?.label || modelId;
+        if (i > 0) {
+          ttftEl.textContent = `Chuyển sang ${modelLabel}...`;
+          ttftEl.style.color = "var(--amber)";
+        }
+
+        const t0 = performance.now();
+        let gotFirstToken = false;
+        let accumulated = "";
+        let finalBadge = modelLabel;
+
+        try {
+          const bodyObj = {
+            contents,
+            systemInstruction: { parts: [{ text: sysInstruction }] },
+            generationConfig: {
+              temperature,
+              thinkingConfig: { thinkingBudget: 0 }
+            }
+          };
+
+          const resp = await fetch(buildStreamUrl(modelId, apiKey), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bodyObj),
+            signal: abortCtrl.signal
+          });
+
+          if (!resp.ok) {
+            const errJson = await resp.json().catch(() => ({}));
+            const msg = errJson?.error?.message || `HTTP ${resp.status}`;
+            const low = msg.toLowerCase();
+
+            if (endpointMode === "studio" && (resp.status === 400 || resp.status === 403) && (low.includes("api key") || low.includes("api_key") || low.includes("permission"))) {
+              endpointMode = "vertex";
+              localStorage.setItem(STORAGE_KEYS.endpoint, "vertex");
+              i--;
+              continue;
+            }
+            if ([503, 429, 404, 500, 502, 504].includes(resp.status) || /unavailable|overloaded|high demand|not found|timeout/i.test(low)) {
+              lastErr = msg;
+              degradedModels.add(modelId);
+              continue;
+            }
+            throw new Error(msg);
+          }
+
+          const reader = resp.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          let buffer = "";
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split(/\r?\n/);
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed.startsWith("data:")) continue;
+              const dataStr = trimmed.slice(5).trim();
+              if (!dataStr || dataStr === "[DONE]") continue;
+              try {
+                const chunk = JSON.parse(dataStr);
+                const txt = extractPartsText(chunk);
+                if (txt) {
+                  accumulated += txt;
+                  holder.rawText = accumulated;
+                  if (!gotFirstToken) {
+                    gotFirstToken = true;
+                    const ttft = ((performance.now() - t0) / 1000).toFixed(2);
+                    finalBadge = `⚡ ${ttft}s • ${modelLabel}`;
+                    ttftEl.textContent = finalBadge;
+                    ttftEl.style.color = "var(--emerald)";
+                    setTelemetry(finalBadge, "var(--emerald)");
+                  }
+                  contentEl.innerHTML = formatRichHTML(accumulated);
+                  chatScroll.scrollTop = chatScroll.scrollHeight;
+                }
+              } catch {}
+            }
+          }
+
+          if (!accumulated.trim()) {
+            const fbResp = await fetch(buildGenerateUrl(modelId, apiKey), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(bodyObj),
+              signal: abortCtrl.signal
+            });
+            if (fbResp.ok) {
+              const fbJson = await fbResp.json();
+              accumulated = extractPartsText(fbJson).trim();
+              const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+              finalBadge = `⚡ ${elapsed}s • ${modelLabel}`;
+            }
+          }
+
+          holder.rawText = accumulated;
+          if (accumulated) {
+            sess.messages.push({ role: "model", text: accumulated, meta: finalBadge });
+            saveJSON(STORAGE_KEYS.sessions, sessions);
+            renderSidebar();
+          }
+          contentEl.innerHTML = formatRichHTML(accumulated || "(Đã dừng phản hồi)");
+          ttftEl.textContent = finalBadge;
+          ttftEl.style.color = "var(--emerald)";
+          setTelemetry(finalBadge, "var(--emerald)");
+          setStreamingUI(false);
+          return;
+        } catch (err) {
+          if (err.name === "AbortError") {
+            if (holder.rawText) {
+              sess.messages.push({ role: "model", text: holder.rawText, meta: finalBadge });
+              saveJSON(STORAGE_KEYS.sessions, sessions);
+            }
+            setTelemetry("⏹ Đã dừng phản hồi", "var(--amber)");
+            setStreamingUI(false);
+            return;
+          }
+          lastErr = err.message || String(err);
+          degradedModels.add(modelId);
+        }
+      }
+
+      ttftEl.textContent = "Lỗi kết nối";
+      ttftEl.style.color = "var(--danger)";
+      setTelemetry("● Lỗi kết nối API", "var(--danger)");
+      contentEl.innerHTML = formatRichHTML(`⚠ Không thể nhận phản hồi: ${lastErr}\n\nHãy bấm nút '🔑 Đổi Key' ở góc trên bên phải nếu bạn cần cập nhật API Key.`);
+      setStreamingUI(false);
+    }
+
+    // Flashcards
+    function updateFcCounter() {
+      tabFcBtn.textContent = `🗂️ Flashcard (${vocabDeck.length})`;
+    }
+
+    function renderFlashcards() {
+      const total = vocabDeck.length;
+      const counter = document.getElementById("fcCounterLbl");
+      const side = document.getElementById("fcSideLbl");
+      const main = document.getElementById("fcMainLbl");
+      const sub = document.getElementById("fcSubLbl");
+
+      if (!total) {
+        counter.textContent = "Thẻ 0 / 0";
+        side.textContent = "FLASHCARD STUDIO";
+        side.style.color = "var(--indigo)";
+        main.textContent = "Chưa có thẻ từ vựng nào";
+        sub.textContent = "Thêm từ ở thanh phía trên hoặc bấm '➕ Lưu từ' dưới mỗi câu trả lời của AI.";
+        sub.style.color = "var(--text-sub)";
+        return;
+      }
+
+      fcIndex = ((fcIndex % total) + total) % total;
+      const card = vocabDeck[fcIndex];
+      counter.textContent = `Thẻ ${fcIndex + 1} / ${total}`;
+
+      if (!fcFlipped) {
+        side.textContent = "ENGLISH TERM";
+        side.style.color = "var(--indigo)";
+        main.textContent = card.word;
+        sub.textContent = card.ipa ? `/${card.ipa}/` : "Bấm Lật thẻ (Space) để xem nghĩa";
+        sub.style.color = "var(--emerald)";
+      } else {
+        side.textContent = "VIETNAMESE MEANING";
+        side.style.color = "var(--emerald)";
+        main.textContent = card.meaning;
+        sub.textContent = card.example ? `"${card.example}"` : "";
+        sub.style.color = "var(--text-sub)";
+      }
+    }
+
+    function quickExtractToFlashcard(rawText) {
+      if (!rawText) return;
+      const wordMatch = rawText.match(/\*\*([A-Za-z][A-Za-z\s\-']{1,36})\*\*/);
+      const ipaMatch = rawText.match(/\/([a-zA-Zɑɒæəɛɜɪiːɔoʊuːʌθðʃʒŋɡʤʧˈˌː.\-() ]{2,40})\//);
+      if (wordMatch) {
+        const word = wordMatch[1].trim();
+        const ipa = ipaMatch ? ipaMatch[1].trim() : "";
+        const firstLine = (rawText.split(/\r?\n/).find(l => l.trim()) || "").replace(/[*#`]/g, "").slice(0, 90);
+        vocabDeck.unshift({ word, ipa, meaning: firstLine, example: "" });
+        saveJSON(STORAGE_KEYS.flashcards, vocabDeck);
+        updateFcCounter();
+        setTelemetry(`✓ Đã thêm '${word}' vào Flashcard`, "var(--emerald)");
+      } else {
+        switchTab("flashcard");
+      }
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      if (tab === "flashcard") {
+        chatView.classList.add("hidden");
+        fcView.classList.add("active");
+        tabFcBtn.classList.add("btn-primary");
+        tabChatBtn.classList.remove("btn-primary");
+        renderFlashcards();
+      } else {
+        fcView.classList.remove("active");
+        chatView.classList.remove("hidden");
+        tabChatBtn.classList.add("btn-primary");
+        tabFcBtn.classList.remove("btn-primary");
+        promptInput.focus();
+      }
+    }
+
+    // API Modal
+    function openApiModal() {
+      apiKeyInput.value = apiKey;
+      apiKeyErr.textContent = "";
+      closeModalBtn.style.display = apiKey ? "inline-flex" : "none";
+      apiModal.classList.add("open");
+      setTimeout(() => apiKeyInput.focus(), 50);
+    }
+
+    function saveApiKey() {
+      const val = apiKeyInput.value.trim();
+      if (!val) {
+        apiKeyErr.textContent = "Vui lòng dán Gemini API Key trước khi tiếp tục.";
+        apiKeyInput.focus();
+        return;
+      }
+      apiKey = val;
+      localStorage.setItem(STORAGE_KEYS.apiKey, val);
+      degradedModels.clear();
+      apiModal.classList.remove("open");
+      if (getCurrentSession().messages.length === 0) renderWelcome();
+      promptInput.focus();
+    }
+
+    // Init UI
+    MODEL_CATALOG.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.label;
+      modelSelect.appendChild(opt);
+    });
+
+    Object.keys(TUTOR_MODES).forEach(mode => {
+      const opt = document.createElement("option");
+      opt.value = mode;
+      opt.textContent = mode;
+      modeSelect.appendChild(opt);
+    });
+
+    const chipsRow = document.getElementById("chipsRow");
+    STARTER_CHIPS.forEach(chip => {
+      const btn = document.createElement("button");
+      btn.className = "chip-btn";
+      btn.textContent = chip.label;
+      btn.onclick = () => {
+        modeSelect.value = chip.mode;
+        getCurrentSession().mode = chip.mode;
+        saveJSON(STORAGE_KEYS.sessions, sessions);
+        promptInput.value = chip.prompt;
+        promptInput.focus();
+      };
+      chipsRow.appendChild(btn);
+    });
+
+    // Events
+    sendBtn.onclick = () => {
+      if (isStreaming && abortCtrl) abortCtrl.abort();
+      else sendMessage();
+    };
+    promptInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (!isStreaming) sendMessage();
+      }
+    });
+    modeSelect.onchange = () => {
+      getCurrentSession().mode = modeSelect.value;
+      saveJSON(STORAGE_KEYS.sessions, sessions);
+    };
+    document.getElementById("newSessionBtn").onclick = () => {
+      if (isStreaming) return;
+      const s = makeBlankSession(modeSelect.value);
+      sessions.unshift(s);
+      currentSessionId = s.id;
+      saveJSON(STORAGE_KEYS.sessions, sessions);
+      switchTab("chat");
+      renderSidebar();
+      loadCurrentSession();
+    };
+    historySearchInput.oninput = renderSidebar;
+    document.getElementById("toggleSidebarBtn").onclick = () => historySidebar.classList.toggle("hidden");
+    tabChatBtn.onclick = () => switchTab("chat");
+    tabFcBtn.onclick = () => switchTab("flashcard");
+    document.getElementById("changeKeyBtn").onclick = openApiModal;
+    closeModalBtn.onclick = () => apiModal.classList.remove("open");
+    document.getElementById("saveKeyBtn").onclick = saveApiKey;
+    apiKeyInput.addEventListener("keydown", e => { if (e.key === "Enter") saveApiKey(); });
+    document.getElementById("toggleKeyVisBtn").onclick = () => {
+      const hidden = apiKeyInput.type === "password";
+      apiKeyInput.type = hidden ? "text" : "password";
+      document.getElementById("toggleKeyVisBtn").textContent = hidden ? "🙈 Ẩn" : "👁 Hiện";
+    };
+
+    // Theme
+    function applyTheme(t) {
+      document.documentElement.setAttribute("data-theme", t);
+      localStorage.setItem(STORAGE_KEYS.theme, t);
+      themeBtn.textContent = t === "light" ? "🌙 Tối" : "☀️ Sáng";
+    }
+    themeBtn.onclick = () => {
+      const cur = document.documentElement.getAttribute("data-theme");
+      applyTheme(cur === "light" ? "dark" : "light");
+    };
+    applyTheme(localStorage.getItem(STORAGE_KEYS.theme) || "dark");
+
+    // Flashcard events
+    document.getElementById("fcAddBtn").onclick = () => {
+      const word = document.getElementById("fcWordIn").value.trim();
+      const meaning = document.getElementById("fcMeanIn").value.trim();
+      if (!word || !meaning) return;
+      vocabDeck.unshift({
+        word,
+        ipa: document.getElementById("fcIpaIn").value.trim().replace(/^\/|\/$/g, ""),
+        meaning,
+        example: document.getElementById("fcExIn").value.trim()
+      });
+      saveJSON(STORAGE_KEYS.flashcards, vocabDeck);
+      ["fcWordIn", "fcIpaIn", "fcMeanIn", "fcExIn"].forEach(id => document.getElementById(id).value = "");
+      fcIndex = 0; fcFlipped = false;
+      updateFcCounter(); renderFlashcards();
+    };
+    const flipCard = () => { if (vocabDeck.length) { fcFlipped = !fcFlipped; renderFlashcards(); } };
+    document.getElementById("fcCardBox").onclick = e => { if (e.target.tagName !== "BUTTON") flipCard(); };
+    document.getElementById("fcFlipBtn").onclick = flipCard;
+    document.getElementById("fcPrevBtn").onclick = () => { if (vocabDeck.length) { fcIndex--; fcFlipped = false; renderFlashcards(); } };
+    document.getElementById("fcNextBtn").onclick = () => { if (vocabDeck.length) { fcIndex++; fcFlipped = false; renderFlashcards(); } };
+    document.getElementById("fcShuffleBtn").onclick = () => {
+      if (vocabDeck.length < 2) return;
+      vocabDeck.sort(() => Math.random() - 0.5);
+      saveJSON(STORAGE_KEYS.flashcards, vocabDeck);
+      fcIndex = 0; fcFlipped = false; renderFlashcards();
+    };
+    document.getElementById("fcSpeakNormal").onclick = () => vocabDeck.length && speakText(vocabDeck[fcIndex % vocabDeck.length].word, 1.0);
+    document.getElementById("fcSpeakSlow").onclick = () => vocabDeck.length && speakText(vocabDeck[fcIndex % vocabDeck.length].word, 0.75);
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && isStreaming && abortCtrl) abortCtrl.abort();
+      const tag = document.activeElement?.tagName;
+      if (activeTab === "flashcard" && tag !== "INPUT" && tag !== "TEXTAREA") {
+        if (e.code === "Space") { e.preventDefault(); flipCard(); }
+        if (e.key === "ArrowLeft") { fcIndex--; fcFlipped = false; renderFlashcards(); }
+        if (e.key === "ArrowRight") { fcIndex++; fcFlipped = false; renderFlashcards(); }
+      }
+    });
+
+    // Boot
+    renderSidebar();
+    loadCurrentSession();
+    updateFcCounter();
+    if (!apiKey) openApiModal();
+  </script>
+</body>
+</html>
